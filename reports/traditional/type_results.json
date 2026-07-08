@@ -1,0 +1,189 @@
+{
+    "LogisticRegression": {
+        "validation": {
+            "accuracy": 0.8017,
+            "precision": 0.8112,
+            "recall": 0.8017,
+            "f1_score": 0.8051,
+            "classification_report": {
+                "Change": {
+                    "precision": 0.9810126582278481,
+                    "recall": 0.96875,
+                    "f1-score": 0.9748427672955975,
+                    "support": 160.0
+                },
+                "Incident": {
+                    "precision": 0.8061068702290076,
+                    "recall": 0.7384615384615385,
+                    "f1-score": 0.7708029197080292,
+                    "support": 715.0
+                },
+                "Problem": {
+                    "precision": 0.5394088669950738,
+                    "recall": 0.6311239193083573,
+                    "f1-score": 0.5816733067729084,
+                    "support": 347.0
+                },
+                "Request": {
+                    "precision": 0.983132530120482,
+                    "recall": 0.9902912621359223,
+                    "f1-score": 0.9866989117291415,
+                    "support": 412.0
+                },
+                "accuracy": 0.8017135862913096,
+                "macro avg": {
+                    "precision": 0.8274152313931029,
+                    "recall": 0.8321566799764545,
+                    "f1-score": 0.8285044763764191,
+                    "support": 1634.0
+                },
+                "weighted avg": {
+                    "precision": 0.811232507213663,
+                    "recall": 0.8017135862913096,
+                    "f1-score": 0.8050547854596952,
+                    "support": 1634.0
+                }
+            }
+        }
+    },
+    "MultinomialNB": {
+        "validation": {
+            "accuracy": 0.7687,
+            "precision": 0.7981,
+            "recall": 0.7687,
+            "f1_score": 0.6995,
+            "classification_report": {
+                "Change": {
+                    "precision": 1.0,
+                    "recall": 0.71875,
+                    "f1-score": 0.8363636363636363,
+                    "support": 160.0
+                },
+                "Incident": {
+                    "precision": 0.6771728748806113,
+                    "recall": 0.9916083916083916,
+                    "f1-score": 0.8047673098751419,
+                    "support": 715.0
+                },
+                "Problem": {
+                    "precision": 0.8076923076923077,
+                    "recall": 0.06051873198847262,
+                    "f1-score": 0.1126005361930295,
+                    "support": 347.0
+                },
+                "Request": {
+                    "precision": 0.92152466367713,
+                    "recall": 0.9975728155339806,
+                    "f1-score": 0.958041958041958,
+                    "support": 412.0
+                },
+                "accuracy": 0.7686658506731946,
+                "macro avg": {
+                    "precision": 0.8515974615625121,
+                    "recall": 0.6921124847827113,
+                    "f1-score": 0.6779433601184415,
+                    "support": 1634.0
+                },
+                "weighted avg": {
+                    "precision": 0.7981126057183876,
+                    "recall": 0.7686658506731946,
+                    "f1-score": 0.6995180423201814,
+                    "support": 1634.0
+                }
+            }
+        }
+    },
+    "LinearSVC": {
+        "validation": {
+            "accuracy": 0.817,
+            "precision": 0.8173,
+            "recall": 0.817,
+            "f1_score": 0.8171,
+            "classification_report": {
+                "Change": {
+                    "precision": 0.9871794871794872,
+                    "recall": 0.9625,
+                    "f1-score": 0.9746835443037974,
+                    "support": 160.0
+                },
+                "Incident": {
+                    "precision": 0.7972027972027972,
+                    "recall": 0.7972027972027972,
+                    "f1-score": 0.7972027972027972,
+                    "support": 715.0
+                },
+                "Problem": {
+                    "precision": 0.5833333333333334,
+                    "recall": 0.5850144092219021,
+                    "f1-score": 0.5841726618705037,
+                    "support": 347.0
+                },
+                "Request": {
+                    "precision": 0.983132530120482,
+                    "recall": 0.9902912621359223,
+                    "f1-score": 0.9866989117291415,
+                    "support": 412.0
+                },
+                "accuracy": 0.8170134638922889,
+                "macro avg": {
+                    "precision": 0.837712036959025,
+                    "recall": 0.8337521171401554,
+                    "f1-score": 0.83568947877656,
+                    "support": 1634.0
+                },
+                "weighted avg": {
+                    "precision": 0.817268045914947,
+                    "recall": 0.8170134638922889,
+                    "f1-score": 0.8171219292472941,
+                    "support": 1634.0
+                }
+            }
+        }
+    },
+    "best_model": "LinearSVC",
+    "test_results": {
+        "accuracy": 0.825,
+        "precision": 0.8213,
+        "recall": 0.825,
+        "f1_score": 0.8225,
+        "classification_report": {
+            "Change": {
+                "precision": 0.9640718562874252,
+                "recall": 0.9415204678362573,
+                "f1-score": 0.9526627218934911,
+                "support": 171.0
+            },
+            "Incident": {
+                "precision": 0.7884615384615384,
+                "recall": 0.8282828282828283,
+                "f1-score": 0.8078817733990148,
+                "support": 693.0
+            },
+            "Problem": {
+                "precision": 0.6292834890965732,
+                "recall": 0.5658263305322129,
+                "f1-score": 0.5958702064896755,
+                "support": 357.0
+            },
+            "Request": {
+                "precision": 0.9832535885167464,
+                "recall": 0.9951573849878934,
+                "f1-score": 0.9891696750902527,
+                "support": 413.0
+            },
+            "accuracy": 0.824969400244798,
+            "macro avg": {
+                "precision": 0.8412676180905708,
+                "recall": 0.832696752909798,
+                "f1-score": 0.8363960942181086,
+                "support": 1634.0
+            },
+            "weighted avg": {
+                "precision": 0.8212962492312661,
+                "recall": 0.824969400244798,
+                "f1-score": 0.8225337417003626,
+                "support": 1634.0
+            }
+        }
+    }
+}

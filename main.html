@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Support System — Login</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f3f4f6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .card {
+      display: flex;
+      width: 100%;
+      max-width: 900px;
+      background: #fff;
+      border-radius: 1.25rem;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+      overflow: hidden;
+      min-height: 520px;
+    }
+
+    /* ── Left panel ── */
+    .left {
+      width: 42%;
+      background: linear-gradient(145deg, #1f2937, #4b5563);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 2rem;
+      gap: 1.75rem;
+    }
+
+    .left-icon {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .left-icon svg { width: 38px; height: 38px; }
+
+    .left h1 { font-size: 1.75rem; font-weight: 700; text-align: center; }
+    .left p  { font-size: 0.85rem; color: #d1d5db; text-align: center; }
+
+    .features { list-style: none; width: 100%; display: flex; flex-direction: column; gap: 1rem; }
+
+    .feature-item {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+    }
+
+    .feature-item svg { width: 18px; height: 18px; color: #4ade80; flex-shrink: 0; margin-top: 2px; }
+
+    .feature-item strong { display: block; font-size: 0.85rem; }
+    .feature-item span   { font-size: 0.75rem; color: #9ca3af; }
+
+    /* ── Right panel ── */
+    .right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 2.5rem 2.5rem;
+    }
+
+    .right h2 { font-size: 1.75rem; font-weight: 700; color: #111827; margin-bottom: 0.25rem; }
+    .right .subtitle { font-size: 0.875rem; color: #6b7280; margin-bottom: 2rem; }
+
+    .form-group { margin-bottom: 1.1rem; }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 0.4rem;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.75rem;
+      background: #f9fafb;
+      font-size: 0.875rem;
+      color: #111827;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus {
+      border-color: #1f2937;
+      box-shadow: 0 0 0 3px rgba(31,41,55,0.1);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 0.75rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 0.5rem;
+    }
+
+    .btn:active { transform: scale(0.98); }
+
+    .btn-dark {
+      background: #111827;
+      color: #fff;
+    }
+    .btn-dark:hover { background: #374151; }
+
+    .btn-light {
+      background: #f3f4f6;
+      color: #1f2937;
+      border: 1px solid #e5e7eb;
+      margin-top: 0.6rem;
+    }
+    .btn-light:hover { background: #e5e7eb; }
+
+    .error-msg {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      border-radius: 0.6rem;
+      padding: 0.6rem 0.9rem;
+      font-size: 0.8rem;
+      margin-bottom: 0.75rem;
+      display: none;
+    }
+
+    .toggle-text {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-top: 1.25rem;
+    }
+
+    .toggle-text a {
+      font-weight: 700;
+      color: #111827;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .toggle-text a:hover { text-decoration: underline; }
+
+    .hint {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin-top: 0.75rem;
+    }
+
+    /* hide/show panels */
+    #signup-panel { display: none; }
+
+    @media (max-width: 640px) {
+      .left { display: none; }
+      .right { padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- Left panel -->
+  <div class="left">
+    <div class="left-icon">
+      <svg fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+    </div>
+    <div>
+      <h1>AI Support System</h1>
+      <p>Intelligent Ticket Classification</p>
+    </div>
+    <ul class="features">
+      <li class="feature-item">
+        <svg fill="none" viewBox="0 0 24 24" stroke="#4ade80" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+        </svg>
+        <div>
+          <strong>AI-Powered Classification</strong>
+          <span>Automatic ticket categorization</span>
+        </div>
+      </li>
+      <li class="feature-item">
+        <svg fill="none" viewBox="0 0 24 24" stroke="#4ade80" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+        </svg>
+        <div>
+          <strong>Smart Response Generation</strong>
+          <span>Context-aware automated responses</span>
+        </div>
+      </li>
+      <li class="feature-item">
+        <svg fill="none" viewBox="0 0 24 24" stroke="#4ade80" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+        </svg>
+        <div>
+          <strong>Real-Time Analytics</strong>
+          <span>Monitor performance and insights</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Right panel -->
+  <div class="right">
+
+    <!-- LOGIN -->
+    <div id="login-panel">
+      <h2>Welcome Back</h2>
+      <p class="subtitle">Sign in to continue to your account</p>
+
+      <div class="error-msg" id="login-error"></div>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="login-email" placeholder="you@example.com"/>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="Enter your password"/>
+      </div>
+
+      <button class="btn btn-dark" onclick="handleLogin('user')">Sign In as User</button>
+      <button class="btn btn-light" onclick="handleLogin('admin')">Sign In as Admin</button>
+
+      <p class="toggle-text">
+        Don't have an account?
+        <a onclick="showSignup()">Register</a>
+      </p>
+    </div>
+
+    <!-- SIGNUP -->
+    <div id="signup-panel">
+      <h2>Create Account</h2>
+      <p class="subtitle">Fill in your details to get started</p>
+
+      <div class="error-msg" id="signup-error"></div>
+
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="signup-name" placeholder="Your full name"/>
+      </div>
+
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="signup-email" placeholder="you@example.com"/>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="signup-password" placeholder="At least 6 characters"/>
+      </div>
+
+      <button class="btn btn-dark" onclick="handleSignup()">Create Account</button>
+
+      <p class="toggle-text">
+        Already have an account?
+        <a onclick="showLogin()">Sign In</a>
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const API = "http://127.0.0.1:8000";
+
+  function showSignup() {
+    document.getElementById("login-panel").style.display = "none";
+    document.getElementById("signup-panel").style.display = "block";
+    clearErrors();
+  }
+
+  function showLogin() {
+    document.getElementById("signup-panel").style.display = "none";
+    document.getElementById("login-panel").style.display = "block";
+    clearErrors();
+  }
+
+  function clearErrors() {
+    document.getElementById("login-error").style.display = "none";
+    document.getElementById("signup-error").style.display = "none";
+  }
+
+  function showError(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.style.display = "block";
+  }
+
+  async function handleLogin(role) {
+    const email    = document.getElementById("login-email").value.trim();
+    const password = document.getElementById("login-password").value;
+
+    if (!email || !password) {
+      showError("login-error", "Please enter your email and password.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, role })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showError("login-error", data.detail || "Invalid credentials.");
+        return;
+      }
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role",  (data.role || "client").trim().toLowerCase());
+      localStorage.setItem("name",  data.name);
+      localStorage.setItem("email", email);
+
+      if ((data.role || "").trim().toLowerCase() === "admin") {
+        window.location.href = "admin_dashboard.html";
+      } else {
+        window.location.href = "client_dashboard.html";
+      }
+
+    } catch {
+      showError("login-error", "Cannot connect to server. Please try again.");
+    }
+  }
+
+  async function handleSignup() {
+    const name     = document.getElementById("signup-name").value.trim();
+    const email    = document.getElementById("signup-email").value.trim();
+    const password = document.getElementById("signup-password").value;
+
+    if (!name || !email || !password) {
+      showError("signup-error", "Please fill in all fields.");
+      return;
+    }
+
+    if (password.length < 6) {
+      showError("signup-error", "Password must be at least 6 characters.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API}/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showError("signup-error", data.detail || "Signup failed.");
+        return;
+      }
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role",  data.role);
+      localStorage.setItem("name",  data.name);
+
+      window.location.href = "client_dashboard.html";
+
+    } catch {
+      showError("signup-error", "Cannot connect to server. Please try again.");
+    }
+  }
+</script>
+
+</body>
+</html>

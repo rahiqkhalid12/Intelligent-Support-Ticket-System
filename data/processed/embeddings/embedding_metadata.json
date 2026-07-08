@@ -1,0 +1,45 @@
+{
+  "tfidf": {
+    "params": {
+      "max_features": 30000,
+      "ngram_range": [
+        1,
+        3
+      ],
+      "stop_words": "english",
+      "sublinear_tf": true,
+      "min_df": 2
+    },
+    "shapes": {
+      "train": [
+        7625,
+        30000
+      ],
+      "val": [
+        1634,
+        30000
+      ],
+      "test": [
+        1634,
+        30000
+      ]
+    }
+  },
+  "sentence_embeddings": {
+    "model": "all-MiniLM-L6-v2",
+    "shapes": {
+      "train": [
+        7625,
+        384
+      ],
+      "val": [
+        1634,
+        384
+      ],
+      "test": [
+        1634,
+        384
+      ]
+    }
+  }
+}

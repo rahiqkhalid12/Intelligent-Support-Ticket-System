@@ -1,0 +1,35 @@
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+sentence-transformers
+torch
+scipy
+transformers
+faiss-cpu
+fastapi
+sqlalchemy
+uvicorn
+python-jose
+passlib
+bcrypt
+python-dotenv
+azure-ai-ml
+azure-search-documents
+mlflow
+
+how to run backend:
+in backend_connector folder run
+app.py
+uvicorn app:app --reload
+
+chrome search:
+http://127.0.0.1:8000/docs
+
+how to run experiments:
+mlops:
+mlflow ui --backend-store-uri sqlite:///mlflow.db
+
+chrome:
+http://127.0.0.1:5000

@@ -1,0 +1,30 @@
+{
+  "classification_metrics": {
+    "type": {
+      "accuracy": 0.7834,
+      "precision": 0.7717,
+      "recall": 0.7834,
+      "f1": 0.7721
+    },
+    "queue": {
+      "accuracy": 0.437,
+      "precision": 0.4299,
+      "recall": 0.437,
+      "f1": 0.4303
+    },
+    "priority": {
+      "accuracy": 0.5122,
+      "precision": 0.5052,
+      "recall": 0.5122,
+      "f1": 0.5049
+    }
+  },
+  "latency_ms": {
+    "avg_retrieval": 25.14,
+    "avg_total": 25.14
+  },
+  "dataset": {
+    "test_size": 1634,
+    "generation_sample": 100
+  }
+}

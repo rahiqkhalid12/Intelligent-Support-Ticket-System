@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Smart Ticket Assistant</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    :root{--primary:#1d2942;--primary2:#1d2942;--bg:#f5f7fb;--surface:#fff;--surface2:#f8fafc;--text:#1e293b;--muted:#64748b;--border:#e2e8f0;--shadow:0 12px 32px rgba(15,23,42,.08)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;transition:background .25s,color .25s}.wrapper{display:flex;min-height:100vh}
+    .sidebar{position:fixed;inset:0 auto 0 0;width:255px;padding:30px 22px;background:linear-gradient(180deg,var(--primary),var(--primary2));color:#fff;z-index:20}.logo{text-align:center;margin-bottom:38px}.logo i{font-size:48px}.logo h3{margin:8px 0 0;font-weight:750}.logo span{opacity:.8}.sidebar ul{list-style:none;padding:0;margin:0}.sidebar li{display:flex;align-items:center;gap:12px;padding:14px 18px;margin:8px 0;border-radius:12px;cursor:pointer;transition:.2s}.sidebar li:hover{background:rgba(255,255,255,.15)}.sidebar li.active{background:#fff;color:var(--primary);font-weight:650}#logout{margin-top:32px;color:#fecaca}#logout:hover{background:#ef4444;color:#fff}
+    .main{width:calc(100% - 255px);margin-left:255px;padding:28px}.topbar{position:sticky;top:14px;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:18px 22px;margin-bottom:24px;background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow)}.topbar h3{margin:0;font-weight:750}.muted{color:var(--muted)}.top-actions{position:relative;display:flex;align-items:center;gap:12px}.icon-btn{width:44px;height:44px;border:1px solid var(--border);border-radius:50%;background:var(--surface2);color:var(--text)}.avatar-btn{width:44px;height:44px;border:0;border-radius:50%;background:var(--primary);color:#fff;font-size:18px;font-weight:700;line-height:1;padding:0}.avatar-btn:hover{background:var(--primary2)}.avatar-btn:focus-visible{outline:3px solid rgba(37,99,235,.3);outline-offset:3px}.profile-popover{position:absolute;top:56px;right:0;width:min(310px,calc(100vw - 32px));padding:24px;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 18px 45px rgba(15,23,42,.2);text-align:center;z-index:30}.profile-popover::before{content:"";position:absolute;right:14px;top:-7px;width:14px;height:14px;background:var(--surface);border-left:1px solid var(--border);border-top:1px solid var(--border);transform:rotate(45deg)}.profile-popover-avatar{display:grid;place-items:center;width:68px;height:68px;margin:0 auto 12px;border-radius:50%;background:var(--primary);color:#fff;font-size:30px}.profile-popover h4{margin:0 0 4px;font-size:18px}.profile-popover p{margin:0;color:var(--muted);overflow-wrap:anywhere}
+    .stat-card,.panel{background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow)}.stat-card{text-align:center;padding:25px}.stat-card i{font-size:38px;color:var(--primary)}.stat-card h2{font-size:36px;margin:7px 0}.stat-card p{margin:0;color:var(--muted)}.panel{padding:26px;margin-top:24px;scroll-margin-top:105px}.panel-title{font-weight:750;margin:0 0 20px}.form-control{background:var(--surface2);color:var(--text);border-color:var(--border)}.form-control:focus{background:var(--surface);color:var(--text)}.analysis-card,.response-box,.ticket-card,.saved-response{background:var(--surface2);border:1px solid var(--border);border-radius:15px;padding:20px}.analysis-card{text-align:center}.analysis-card i{font-size:28px;color:var(--primary)}.response-box{min-height:140px;white-space:pre-wrap}.tickets-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px}.ticket-card h5{color:var(--primary)}.ticket-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}.ticket-id{font-size:13px;font-weight:700;color:var(--primary);letter-spacing:.03em}.responses-list{display:grid;gap:14px}.saved-response p{margin:12px 0 0;white-space:pre-wrap}.response-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.stars{display:flex;gap:9px}.stars button{border:0;background:transparent;color:#cbd5e1;font-size:30px;padding:0}.stars button.active{color:#fbbf24}.admin-response-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px;margin-top:12px;white-space:pre-wrap;font-size:.9rem}.loading{position:fixed;inset:0;z-index:100;background:rgba(255,255,255,.75);display:grid;place-content:center;text-align:center}.hidden{display:none!important}footer{text-align:center;color:var(--muted);padding:35px 0 8px}
+    body.dark{--bg:#0f172a;--surface:#1e293b;--surface2:#263449;--text:#f8fafc;--muted:#cbd5e1;--border:#475569;--shadow:0 12px 32px rgba(0,0,0,.25)}body.dark .sidebar{background:linear-gradient(180deg,#172554,#0f172a)}body.dark .btn-light{background:#334155;color:#fff;border-color:#475569}body.dark .loading{background:rgba(15,23,42,.82)}body.dark .form-control::placeholder{color:#94a3b8}body.dark .admin-response-box{background:#14532d;border-color:#166534}
+    @media(max-width:850px){.sidebar{width:78px;padding:25px 10px}.logo h3,.logo span,.sidebar li span{display:none}.sidebar li{justify-content:center}.main{margin-left:78px;width:calc(100% - 78px);padding:18px}}@media(max-width:560px){.sidebar{position:static;width:100%;min-height:auto}.sidebar .logo{display:none}.sidebar ul{display:flex;overflow:auto}.sidebar li{flex:0 0 52px;margin:6px}.wrapper{display:block}.main{margin:0;width:100%;padding:12px}.topbar h3{font-size:18px}.topbar small{display:none}.panel{padding:18px}}
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <aside class="sidebar">
+    <div class="logo"><i class="bi bi-robot"></i><h3>Smart Ticket</h3><span>Assistant</span></div>
+    <ul>
+      <li class="menu-item active" data-section="dashboard"><i class="bi bi-speedometer2"></i><span>Dashboard</span></li>
+      <li class="menu-item" data-section="submit"><i class="bi bi-ticket-perforated"></i><span>Submit Ticket</span></li>
+      <li class="menu-item" data-section="tickets"><i class="bi bi-folder2-open"></i><span>My Tickets</span></li>
+      <li class="menu-item" data-section="response"><i class="bi bi-stars"></i><span>AI Response</span></li>
+      <li class="menu-item" data-section="feedback"><i class="bi bi-chat-square-heart"></i><span>Feedback</span></li>
+      <li id="logout"><i class="bi bi-box-arrow-right"></i><span>Logout</span></li>
+    </ul>
+  </aside>
+  <main class="main">
+    <nav class="topbar">
+      <div><h3>Welcome back, <span id="welcomeName">User</span></h3><small class="muted">Smart Ticket Assistant Dashboard</small></div>
+      <div class="top-actions">
+        <button id="darkMode" class="icon-btn" type="button" aria-label="Toggle dark mode"><i class="bi bi-moon-stars"></i></button>
+        <button id="profileButton" class="avatar-btn" type="button" aria-label="Open profile" aria-expanded="false" aria-controls="profilePopover"><span id="profileInitial">U</span></button>
+        <div id="profilePopover" class="profile-popover hidden" role="dialog" aria-label="Profile information">
+          <div id="profilePopoverInitial" class="profile-popover-avatar">U</div>
+          <h4 id="profileName">User</h4>
+          <p id="profileEmail">Signed-in account</p>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ── Dashboard stats ── -->
+    <section id="dashboard" class="row g-3">
+      <div class="col-sm-6 col-xl-3"><div class="stat-card"><i class="bi bi-arrow-repeat text-warning"></i><h2 id="activeCount">0</h2><p>Active Tickets<br><small class="muted" style="font-size:11px">Reopened + In Progress</small></p></div></div>
+      <div class="col-sm-6 col-xl-3"><div class="stat-card"><i class="bi bi-check-circle-fill text-success"></i><h2 id="resolvedCount">0</h2><p>Resolved</p></div></div>
+      <div class="col-sm-6 col-xl-3"><div class="stat-card"><i class="bi bi-x-circle-fill text-danger"></i><h2 id="failedCount">0</h2><p>Failed</p></div></div>
+      <div class="col-sm-6 col-xl-3"><div class="stat-card"><i class="bi bi-stars text-info"></i><h2 id="responseCount">0</h2><p>AI Responses</p></div></div>
+    </section>
+
+    <!-- ── Submit ticket ── -->
+    <section id="submit" class="panel">
+      <h4 class="panel-title"><i class="bi bi-ticket-detailed"></i> Submit New Ticket</h4>
+      <label class="form-label" for="subject">Subject</label>
+      <input id="subject" class="form-control mb-1" placeholder="Enter ticket subject">
+      <div id="subjectError" class="invalid-feedback mb-3">Please enter a subject.</div>
+      <label class="form-label mt-3" for="description">Description</label>
+      <textarea id="description" rows="5" class="form-control mb-3" placeholder="Describe your issue"></textarea>
+      <button id="submitBtn" class="btn btn-primary px-4"><i class="bi bi-send-fill"></i> Submit Ticket</button>
+    </section>
+
+    <!-- ── AI analysis labels ── -->
+    <section class="panel">
+      <h4 class="panel-title"><i class="bi bi-cpu-fill"></i> AI Ticket Analysis</h4>
+      <div class="row g-3">
+        <div class="col-md-4"><div class="analysis-card"><i class="bi bi-diagram-3-fill"></i><h6>Queue</h6><span id="queue" class="badge bg-primary">-</span></div></div>
+        <div class="col-md-4"><div class="analysis-card"><i class="bi bi-tags-fill"></i><h6>Type</h6><span id="type" class="badge bg-success">-</span></div></div>
+        <div class="col-md-4"><div class="analysis-card"><i class="bi bi-exclamation-circle-fill"></i><h6>Priority</h6><span id="priority" class="badge bg-secondary">-</span></div></div>
+      </div>
+    </section>
+
+    <!-- ── My tickets ── -->
+    <section id="tickets" class="panel">
+      <div class="d-flex flex-wrap gap-3 justify-content-between align-items-center mb-3">
+        <h4 class="panel-title mb-0"><i class="bi bi-folder-fill"></i> My Tickets</h4>
+        <input id="ticketSearch" class="form-control" style="max-width:260px" placeholder="Search tickets...">
+      </div>
+      <div id="ticketsContainer" class="tickets-grid"><p class="muted">No tickets to display.</p></div>
+    </section>
+
+    <!-- ── AI response viewer ── -->
+    <section id="response" class="panel">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="panel-title mb-0"><i class="bi bi-stars"></i> AI Generated Response</h4>
+        <button id="copyBtn" class="btn btn-outline-primary"><i class="bi bi-clipboard"></i> Copy</button>
+      </div>
+      <div id="aiResponse" class="response-box">AI response will appear here...</div>
+      <!-- Admin response block (hidden until there is one) -->
+      <div id="adminResponseBlock" class="hidden">
+        <h6 class="mt-3 mb-1"><i class="bi bi-person-badge-fill text-success"></i> Admin Response</h6>
+        <div id="adminResponse" class="admin-response-box"></div>
+      </div>
+      <h5 class="mt-4 mb-3">Saved AI Responses</h5>
+      <div id="savedResponses" class="responses-list"><p class="muted">No saved responses yet.</p></div>
+    </section>
+
+    <!-- ── Feedback ── -->
+    <section id="feedback" class="panel">
+      <h4 class="panel-title"><i class="bi bi-chat-heart-fill"></i> Leave Feedback</h4>
+      <label class="form-label" for="feedbackResponse">AI response</label>
+      <select id="feedbackResponse" class="form-control mb-3"><option value="">No AI responses available</option></select>
+      <div id="starsContainer" class="stars mb-3" aria-label="Rating">
+        <button data-value="1">★</button><button data-value="2">★</button><button data-value="3">★</button><button data-value="4">★</button><button data-value="5">★</button>
+      </div>
+      <textarea id="comment" class="form-control" rows="4" placeholder="Tell us about your experience..."></textarea>
+      <button id="feedbackBtn" class="btn btn-success mt-3">Submit Feedback</button>
+    </section>
+
+    <footer>© 2026 Smart Ticket Assistant<br><small>Powered by FastAPI · Azure AI Search · Qwen AI</small></footer>
+  </main>
+</div>
+
+<div id="loading" class="loading hidden"><div><div class="spinner-border text-primary"></div><p class="mt-3">Generating AI response...</p></div></div>
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="liveToast" class="toast" role="alert">
+    <div class="toast-header"><strong class="me-auto">Smart Ticket Assistant</strong><button class="btn-close" data-bs-dismiss="toast"></button></div>
+    <div id="toastMessage" class="toast-body"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const API = 'http://127.0.0.1:8000';
+  const $ = id => document.getElementById(id);
+  const token = localStorage.getItem('token');
+  const toast = new bootstrap.Toast($('liveToast'));
+
+  function notify(message) { $('toastMessage').textContent = message; toast.show(); }
+  function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }; }
+  function escapeHtml(value = '') { const div = document.createElement('div'); div.textContent = value ?? ''; return div.innerHTML; }
+  function goTo(section) { const el = $(section); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+
+  if (!token) { window.location.replace('main.html'); }
+
+  // ── User info ──
+  let tokenEmail = '';
+  try { tokenEmail = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).email || ''; } catch {}
+  const userName = localStorage.getItem('name') || 'User';
+  const userInitial = (userName.trim().charAt(0) || 'U').toUpperCase();
+  $('welcomeName').textContent = userName;
+  $('profileName').textContent = userName;
+  $('profileInitial').textContent = userInitial;
+  $('profilePopoverInitial').textContent = userInitial;
+  $('profileEmail').textContent = localStorage.getItem('email') || tokenEmail || 'Signed-in account';
+
+  // ── Sidebar nav ──
+  document.querySelectorAll('.menu-item').forEach(item => item.addEventListener('click', () => {
+    document.querySelectorAll('.menu-item').forEach(x => x.classList.remove('active'));
+    item.classList.add('active');
+    goTo(item.dataset.section);
+  }));
+
+  // ── Profile popover ──
+  $('profileButton').addEventListener('click', event => {
+    event.stopPropagation();
+    const willOpen = $('profilePopover').classList.contains('hidden');
+    $('profilePopover').classList.toggle('hidden', !willOpen);
+    $('profileButton').setAttribute('aria-expanded', String(willOpen));
+  });
+  document.addEventListener('click', event => {
+    if (!event.target.closest('.top-actions')) { $('profilePopover').classList.add('hidden'); $('profileButton').setAttribute('aria-expanded', 'false'); }
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') { $('profilePopover').classList.add('hidden'); $('profileButton').setAttribute('aria-expanded', 'false'); $('profileButton').focus(); }
+  });
+
+  // ── Logout ──
+  $('logout').addEventListener('click', () => {
+    if (confirm('Are you sure you want to logout?')) {
+      localStorage.removeItem('token'); localStorage.removeItem('role');
+      localStorage.removeItem('name'); localStorage.removeItem('email');
+      window.location.replace('main.html');
+    }
+  });
+
+  // ── Dark mode ──
+  function applyTheme(theme) {
+    document.body.classList.toggle('dark', theme === 'dark');
+    $('darkMode').innerHTML = theme === 'dark' ? '<i class="bi bi-sun-fill"></i>' : '<i class="bi bi-moon-stars"></i>';
+    $('darkMode').setAttribute('aria-label', theme === 'dark' ? 'Use light mode' : 'Use dark mode');
+  }
+  applyTheme(localStorage.getItem('theme') || 'light');
+  $('darkMode').addEventListener('click', () => {
+    const next = document.body.classList.contains('dark') ? 'light' : 'dark';
+    localStorage.setItem('theme', next); applyTheme(next);
+  });
+
+  // ── Badge helpers ──
+  function priorityClass(value) {
+    const p = (value || '').toLowerCase();
+    return p === 'high' || p === 'urgent' ? 'bg-danger' : p === 'medium' ? 'bg-warning text-dark' : p === 'low' ? 'bg-success' : 'bg-secondary';
+  }
+
+  function statusClass(value) {
+    const s = (value || '').toLowerCase();
+    if (s === 'resolved') return 'bg-success';
+    if (s === 'failed')   return 'bg-danger';
+    if (s === 'reopened') return 'bg-warning text-dark';
+    if (s === 'in progress' || s === 'in_progress') return 'bg-info text-dark';
+    return 'bg-secondary';
+  }
+
+  // ── State ──
+  let myTickets = [];
+  let viewingTicketId = null;
+
+  // ── Utility: get latest response for a ticket ──
+  function latestResponseFor(tickets, ticketId) {
+    const t = tickets.find(x => Number(x.id) === Number(ticketId));
+    if (!t) return { ticket: null, response: null };
+    const rs = (t.responses || []).slice().sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+    return { ticket: t, response: rs[0] || null };
+  }
+
+  // ── Response viewer ──
+  function updateResponseViewer(ticket, response) {
+    $('queue').textContent = ticket?.predicted_queue || '-';
+    $('type').textContent  = ticket?.predicted_type  || '-';
+    $('priority').textContent = ticket?.predicted_priority || '-';
+    $('priority').className = `badge ${priorityClass(ticket?.predicted_priority)}`;
+
+    // AI response
+    $('aiResponse').textContent = response
+      ? `Ticket #${response.ticket_id}\n\n${response.generated_response || 'No response text.'}`
+      : 'AI response will appear here...';
+
+    // Admin response — show only if ticket has one
+    const adminText = ticket?.admin_response || '';
+    if (adminText) {
+      $('adminResponse').textContent = adminText;
+      $('adminResponseBlock').classList.remove('hidden');
+    } else {
+      $('adminResponseBlock').classList.add('hidden');
+    }
+  }
+
+  function viewResponse(ticketId) {
+    viewingTicketId = Number(ticketId);
+    const { ticket, response } = latestResponseFor(myTickets, ticketId);
+    updateResponseViewer(ticket, response);
+    goTo('response');
+  }
+
+  // ── Dashboard stats (Active = Reopened + In Progress) ──
+  function renderDashboard(tickets) {
+    const statuses = tickets.map(t => (t.status || '').toLowerCase());
+    $('activeCount').textContent   = statuses.filter(s => s === 'reopened' || s === 'in progress' || s === 'in_progress').length;
+    $('resolvedCount').textContent = statuses.filter(s => s === 'resolved').length;
+    $('failedCount').textContent   = statuses.filter(s => s === 'failed').length;
+    $('responseCount').textContent = tickets.reduce((total, t) => total + (t.responses || []).length, 0);
+  }
+
+  // ── Ticket cards ──
+  function renderTickets(tickets) {
+    const term = $('ticketSearch').value.trim().toLowerCase();
+    const filtered = tickets.filter(t =>
+      [t.id, t.subject, t.description, t.status, t.predicted_queue, t.predicted_type]
+        .some(v => String(v || '').toLowerCase().includes(term))
+    );
+
+    $('ticketsContainer').innerHTML = filtered.length
+      ? filtered.map(t => {
+          const hasResponse  = (t.responses || []).length > 0;
+          const isResolved   = (t.status || '').toLowerCase() === 'resolved';
+          const hasAdminResp = !!(t.admin_response || '').trim();
+
+          return `<article class="ticket-card">
+            <div class="ticket-id mb-2">TICKET #${escapeHtml(t.id)}</div>
+            <h5>${escapeHtml(t.subject || 'Untitled ticket')}</h5>
+            <p class="muted">${escapeHtml(t.description || '')}</p>
+            ${hasAdminResp ? `<div class="admin-response-box mt-2"><strong><i class="bi bi-person-badge-fill"></i> Admin Reply:</strong><br>${escapeHtml(t.admin_response)}</div>` : ''}
+            <div class="ticket-actions">
+              <span class="badge ${statusClass(t.status)}">${escapeHtml(t.status || 'Open')}</span>
+              <span class="badge ${priorityClass(t.predicted_priority)}">${escapeHtml(t.predicted_priority || 'Unclassified')}</span>
+              ${hasResponse ? `<button class="btn btn-sm btn-outline-primary" type="button" onclick="viewResponse(${Number(t.id)})"><i class="bi bi-eye"></i> View AI Response</button>` : ''}
+              ${isResolved  ? `<button class="btn btn-sm btn-outline-danger ms-auto" type="button" onclick="reopenTicket(${Number(t.id)})"><i class="bi bi-arrow-counterclockwise"></i> Reopen Ticket</button>` : ''}
+            </div>
+          </article>`;
+        }).join('')
+      : '<p class="muted">No tickets to display.</p>';
+  }
+
+  // ── Saved responses + feedback dropdown ──
+  function renderResponses(tickets) {
+    const responses = tickets
+      .flatMap(t => (t.responses || []).map(r => ({ ...r, subject: t.subject })))
+      .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+
+    $('savedResponses').innerHTML = responses.length
+      ? responses.map(r => {
+          const score   = r.confidence_score == null ? 'Not available' : `${Math.round(Number(r.confidence_score) * 100)}%`;
+          const seconds = r.response_time_ms == null ? '' : ` · ${(r.response_time_ms / 1000).toFixed(1)}s`;
+          return `<article class="saved-response">
+            <div class="response-meta">
+              <span class="ticket-id">TICKET #${escapeHtml(r.ticket_id)}</span>
+              <strong>${escapeHtml(r.subject || 'Untitled ticket')}</strong>
+              <span class="badge bg-primary">Confidence ${escapeHtml(score)}</span>
+              <small class="muted">${escapeHtml(r.model_used || 'AI')}${escapeHtml(seconds)}</small>
+            </div>
+            <p>${escapeHtml(r.generated_response || 'No response text.')}</p>
+            <button class="btn btn-sm btn-outline-primary mt-2" type="button" onclick="viewResponse(${Number(r.ticket_id)})">
+              <i class="bi bi-eye"></i> View in AI Response Viewer
+            </button>
+          </article>`;
+        }).join('')
+      : '<p class="muted">No saved responses yet.</p>';
+
+    // Feedback dropdown
+    $('feedbackResponse').innerHTML = responses.length
+      ? responses.map(r => `<option value="${Number(r.id)}">Ticket #${escapeHtml(r.ticket_id)} — ${escapeHtml(r.subject || 'Untitled ticket')}</option>`).join('')
+      : '<option value="">No AI responses available</option>';
+
+    // Keep viewer in sync
+    const targetId = viewingTicketId || (responses[0] && responses[0].ticket_id);
+    if (targetId) {
+      const { ticket, response } = latestResponseFor(tickets, targetId);
+      updateResponseViewer(ticket, response);
+    } else {
+      updateResponseViewer(null, null);
+    }
+  }
+
+  // ── Load all tickets from backend ──
+  async function loadTickets() {
+    try {
+      const res = await fetch(`${API}/tickets/my`, { headers: { Authorization: `Bearer ${token}` } });
+      if (res.status === 401) { localStorage.clear(); window.location.replace('main.html'); return; }
+      if (!res.ok) throw new Error();
+      myTickets = (await res.json()).tickets || [];
+      renderTickets(myTickets);
+      renderDashboard(myTickets);
+      renderResponses(myTickets);
+    } catch {
+      myTickets = [];
+      renderTickets([]); renderDashboard([]); renderResponses([]);
+      notify('Could not load tickets. Make sure app.py is running on port 8000.');
+    }
+  }
+
+  $('ticketSearch').addEventListener('input', () => renderTickets(myTickets));
+  loadTickets();
+
+  // ── Reopen ticket ──
+  // Only visible for Resolved tickets → calls PATCH /tickets/{id}/reopen → status becomes Reopened
+  async function reopenTicket(ticketId) {
+    if (!confirm(`Reopen ticket #${ticketId} for human support?`)) return;
+    try {
+      const res  = await fetch(`${API}/tickets/${ticketId}/reopen`, { method: 'PATCH', headers: authHeaders() });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Could not reopen ticket.');
+      if (viewingTicketId === Number(ticketId)) viewingTicketId = null;
+      notify(`Ticket #${ticketId} reopened. An admin will review it.`);
+      await loadTickets();  // refresh immediately
+    } catch (error) { notify(error.message); }
+  }
+
+  // ── Submit ticket ──
+  $('submitBtn').addEventListener('click', async () => {
+    const subject     = $('subject');
+    const description = $('description');
+    if (!subject.value.trim()) { subject.classList.add('is-invalid'); return; }
+    subject.classList.remove('is-invalid');
+    if (!description.value.trim()) { notify('Please enter a description.'); return; }
+
+    $('loading').classList.remove('hidden');
+    $('submitBtn').disabled = true;
+
+    try {
+      const res  = await fetch(`${API}/tickets`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ subject: subject.value.trim(), description: description.value.trim() })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Ticket submission failed.');
+
+      // Immediately update the analysis panel from the response
+      viewingTicketId          = data.ticket_id;
+      $('queue').textContent   = data.predicted_queue   || '-';
+      $('type').textContent    = data.predicted_type    || '-';
+      $('priority').textContent = data.predicted_priority || '-';
+      $('priority').className  = `badge ${priorityClass(data.predicted_priority)}`;
+      $('aiResponse').textContent = `Ticket #${data.ticket_id}\n\n${data.generated_response || 'No response was generated.'}`;
+      $('adminResponseBlock').classList.add('hidden');
+
+      subject.value     = '';
+      description.value = '';
+      notify('Ticket submitted successfully.');
+      await loadTickets();   // reload everything from backend
+      goTo('response');
+    } catch (error) {
+      notify(error.message || 'Unable to connect to the server.');
+    } finally {
+      $('loading').classList.add('hidden');
+      $('submitBtn').disabled = false;
+    }
+  });
+
+  $('subject').addEventListener('input', () => $('subject').classList.remove('is-invalid'));
+
+  // ── Copy response ──
+  $('copyBtn').addEventListener('click', async () => {
+    const text = $('aiResponse').textContent;
+    if (text.startsWith('AI response will')) return notify('Nothing to copy.');
+    try { await navigator.clipboard.writeText(text); notify('Response copied.'); }
+    catch { notify('Copy is not available in this browser.'); }
+  });
+
+  // ── Feedback ──
+  let rating = 0;
+  const stars = [...document.querySelectorAll('#starsContainer button')];
+  stars.forEach(star => star.addEventListener('click', () => {
+    rating = Number(star.dataset.value);
+    stars.forEach(s => s.classList.toggle('active', Number(s.dataset.value) <= rating));
+  }));
+
+  $('feedbackBtn').addEventListener('click', async () => {
+    const responseId = Number($('feedbackResponse').value);
+    if (!responseId) return notify('Please select an AI response.');
+    if (!rating)     return notify('Please select a rating.');
+    $('feedbackBtn').disabled = true;
+    try {
+      const res  = await fetch(`${API}/feedback`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ response_id: responseId, rating, comment: $('comment').value.trim() })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Could not save feedback.');
+      rating = 0;
+      stars.forEach(s => s.classList.remove('active'));
+      $('comment').value = '';
+      notify(`Feedback saved for ticket #${data.ticket_id}.`);
+      await loadTickets();  // refresh after feedback too
+    } catch (error) { notify(error.message); }
+    finally { $('feedbackBtn').disabled = false; }
+  });
+</script>
+</body>
+</html>

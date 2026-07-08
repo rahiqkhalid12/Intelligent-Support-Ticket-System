@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Support System — Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f3f4f6; min-height: 100vh; }
+
+    nav { background: #1f2937; color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 60px; position: sticky; top: 0; z-index: 50; }
+    nav .brand { font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; }
+    nav .brand span { color: #f59e0b; }
+    nav .admin-badge { background: #f59e0b; color: #1f2937; font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 0.3rem; margin-left: 0.5rem; }
+    .nav-right { display: flex; align-items: center; gap: 1rem; }
+    .nav-right .user-name { font-size: 0.875rem; color: #d1d5db; }
+    .btn-logout { background: transparent; border: 1px solid #6b7280; color: #d1d5db; padding: 0.35rem 0.9rem; border-radius: 0.5rem; font-size: 0.8rem; cursor: pointer; }
+    .btn-logout:hover { background: #374151; }
+
+    /* Tabs */
+    .tabs { background: #fff; border-bottom: 1px solid #e5e7eb; display: flex; padding: 0 2rem; gap: 0; position: sticky; top: 60px; z-index: 40; }
+    .tab-btn { padding: 0.9rem 1.25rem; font-size: 0.875rem; font-weight: 500; color: #6b7280; border: none; background: none; cursor: pointer; border-bottom: 2px solid transparent; transition: 0.2s; display: flex; align-items: center; gap: 0.4rem; }
+    .tab-btn:hover { color: #111827; }
+    .tab-btn.active { color: #111827; border-bottom-color: #1f2937; font-weight: 600; }
+    .tab-count { background: #e5e7eb; color: #374151; font-size: 0.68rem; font-weight: 700; padding: 0.05rem 0.4rem; border-radius: 9999px; min-width: 1.1rem; text-align: center; }
+    .tab-btn.active .tab-count { background: #1f2937; color: #fff; }
+
+    main { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; display: flex; flex-direction: column; gap: 1.5rem; }
+    h1 { font-size: 1.4rem; font-weight: 700; color: #111827; }
+    .section-subtitle { font-size: 0.85rem; color: #6b7280; margin-top: 0.2rem; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: flex; flex-direction: column; gap: 1.5rem; }
+
+    /* KPI */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; }
+    .kpi-card { background: #fff; border-radius: 0.875rem; padding: 1.25rem 1.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.06); border-left: 3px solid transparent; }
+    .kpi-card.accent-total     { border-left-color: #6366f1; }
+    .kpi-card.accent-attention { border-left-color: #f59e0b; }
+    .kpi-card.accent-reopened  { border-left-color: #a855f7; }
+    .kpi-card.accent-failed    { border-left-color: #dc2626; }
+    .kpi-card.accent-high      { border-left-color: #ef4444; }
+    .kpi-card.accent-clients   { border-left-color: #0891b2; }
+    .kpi-label { font-size: 0.78rem; color: #6b7280; font-weight: 500; }
+    .kpi-value { font-size: 2rem; font-weight: 700; color: #111827; margin-top: 0.25rem; }
+    .kpi-sub   { font-size: 0.75rem; color: #9ca3af; margin-top: 0.15rem; }
+
+    /* Card */
+    .card { background: #fff; border-radius: 1rem; padding: 1.75rem; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem; }
+    .card h2 { font-size: 1.05rem; font-weight: 600; color: #111827; }
+    .card-note { font-size: 0.78rem; color: #9ca3af; margin-top: 0.15rem; }
+
+    .filters { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    select, input[type="search"] { padding: 0.45rem 0.8rem; border: 1px solid #e5e7eb; border-radius: 0.6rem; background: #f9fafb; font-size: 0.8rem; color: #374151; outline: none; }
+    select:focus, input[type="search"]:focus { border-color: #1f2937; }
+
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    th { text-align: left; padding: 0.6rem 0.75rem; background: #f9fafb; color: #6b7280; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 1px solid #e5e7eb; white-space: nowrap; }
+    td { padding: 0.8rem 0.75rem; border-bottom: 1px solid #f3f4f6; color: #374151; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafafa; }
+
+    .badge { padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; display: inline-block; }
+    .badge-type      { background: #dbeafe; color: #1e40af; }
+    .badge-queue     { background: #ede9fe; color: #5b21b6; }
+    .badge-high      { background: #fee2e2; color: #991b1b; }
+    .badge-medium    { background: #fef3c7; color: #92400e; }
+    .badge-low       { background: #dcfce7; color: #166534; }
+    .badge-status-inprogress { background: #dbeafe; color: #1e40af; }
+    .badge-status-reopened   { background: #f3e8ff; color: #7e22ce; }
+    .badge-status-failed     { background: #fee2e2; color: #b91c1c; }
+    .badge-status-open       { background: #f3f4f6; color: #4b5563; }
+    .badge-status-resolved   { background: #dcfce7; color: #166534; }
+
+    .status-select { padding: 0.3rem 0.55rem; border-radius: 0.4rem; border: 1px solid #e5e7eb; font-size: 0.75rem; cursor: pointer; font-weight: 600; }
+    .status-select.status-open        { background: #f3f4f6; color: #4b5563; }
+    .status-select.status-inprogress  { background: #dbeafe; color: #1e40af; }
+    .status-select.status-reopened    { background: #f3e8ff; color: #7e22ce; }
+    .status-select.status-failed      { background: #fee2e2; color: #b91c1c; }
+    .status-select.status-resolved    { background: #dcfce7; color: #166534; }
+
+    .client-cell .client-name { font-weight: 600; color: #111827; }
+    .client-cell .client-email { color: #9ca3af; font-size: 0.75rem; }
+
+    .desc-cell { max-width: 240px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; color: #1f2937; font-weight: 500; }
+    .desc-cell:hover { text-decoration: underline; }
+    .empty-state { text-align: center; padding: 2.5rem; color: #9ca3af; font-size: 0.875rem; }
+    .loading { text-align: center; color: #6b7280; font-size: 0.875rem; padding: 1.5rem; }
+    .error-state { text-align: center; padding: 2rem; color: #b91c1c; font-size: 0.85rem; }
+
+    /* Stars */
+    .stars { color: #f59e0b; font-size: 0.9rem; }
+    .stars span { color: #d1d5db; }
+
+    /* Log action badge */
+    .log-action { background: #f3f4f6; color: #374151; padding: 0.15rem 0.5rem; border-radius: 0.35rem; font-size: 0.72rem; font-family: monospace; }
+
+    /* Modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: #fff; border-radius: 1rem; padding: 2rem; max-width: 640px; width: 100%; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.25); }
+    .modal h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.25rem; color: #111827; }
+    .modal-ticket-id { font-size: 0.78rem; color: #9ca3af; margin-bottom: 1.25rem; }
+    .modal-section { margin-bottom: 1.1rem; }
+    .modal-label { font-size: 0.72rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem; }
+    .modal-value { font-size: 0.875rem; color: #374151; line-height: 1.6; }
+    .modal-client-box { display: flex; justify-content: space-between; align-items: center; background: #f9fafb; border-radius: 0.6rem; padding: 0.75rem 1rem; flex-wrap: wrap; gap: 0.5rem; }
+    .modal-client-box .name { font-weight: 700; color: #111827; font-size: 0.9rem; }
+    .modal-client-box .email { color: #6b7280; font-size: 0.8rem; }
+    .modal-status-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .modal-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; gap: 0.75rem; flex-wrap: wrap; }
+    .modal-close { background: #1f2937; color: #fff; border: none; padding: 0.6rem 1.25rem; border-radius: 0.6rem; font-size: 0.875rem; font-weight: 600; cursor: pointer; }
+    .modal-close:hover { background: #374151; }
+    .modal-save-note { font-size: 0.75rem; color: #16a34a; font-weight: 600; opacity: 0; transition: opacity 0.2s; }
+    .modal-save-note.show { opacity: 1; }
+
+    /* Admin reply box */
+    .admin-reply-textarea { width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #e5e7eb; border-radius: 0.6rem; font-size: 0.85rem; font-family: inherit; resize: vertical; color: #374151; background: #f9fafb; }
+    .admin-reply-textarea:focus { outline: none; border-color: #1f2937; background: #fff; }
+    .admin-reply-actions { display: flex; justify-content: flex-end; margin-top: 0.6rem; }
+    .btn-save-reply { background: #16a34a; color: #fff; border: none; padding: 0.6rem 1.25rem; border-radius: 0.6rem; font-size: 0.875rem; font-weight: 600; cursor: pointer; }
+    .btn-save-reply:hover { background: #15803d; }
+    .btn-save-reply:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Monitoring tab */
+    .kpi-card.accent-mon-users      { border-left-color: #0891b2; }
+    .kpi-card.accent-mon-total      { border-left-color: #6366f1; }
+    .kpi-card.accent-mon-resolved   { border-left-color: #16a34a; }
+    .kpi-card.accent-mon-reopened   { border-left-color: #a855f7; }
+    .kpi-card.accent-mon-failed     { border-left-color: #dc2626; }
+    .kpi-card.accent-mon-response   { border-left-color: #f59e0b; }
+    .kpi-card.accent-mon-confidence { border-left-color: #2563eb; }
+    .kpi-card.accent-mon-rating     { border-left-color: #ea580c; }
+
+    .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 800px) { .charts-row { grid-template-columns: 1fr; } }
+
+    /* Retraining alerts */
+    .retrain-status-banner { display: flex; align-items: center; gap: 0.75rem; padding: 0.9rem 1.25rem; border-radius: 0.75rem; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .retrain-status-banner.status-ok { background: #dcfce7; color: #166534; }
+    .retrain-status-banner.status-warning { background: #fef3c7; color: #92400e; }
+    .retrain-status-banner.status-retrain_recommended { background: #fee2e2; color: #991b1b; }
+    .retrain-status-dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+    .alert-list { display: flex; flex-direction: column; gap: 0.75rem; }
+    .alert-item { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; padding: 0.9rem 1.1rem; border-radius: 0.6rem; border-left: 3px solid; background: #f9fafb; }
+    .alert-item.severity-warning { border-left-color: #f59e0b; }
+    .alert-item.severity-critical { border-left-color: #dc2626; }
+    .alert-item .alert-text { font-size: 0.85rem; color: #374151; line-height: 1.5; }
+    .alert-item .alert-label { font-weight: 700; color: #111827; font-size: 0.82rem; margin-bottom: 0.15rem; }
+    .btn-resolve { background: #fff; border: 1px solid #e5e7eb; color: #6b7280; padding: 0.35rem 0.8rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .btn-resolve:hover { background: #f3f4f6; color: #111827; }
+    .chart-wrap { position: relative; height: 280px; }
+
+    .refresh-row { display: flex; align-items: center; gap: 0.75rem; }
+    .btn-refresh { background: #1f2937; color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 0.6rem; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+    .btn-refresh:hover { background: #374151; }
+    .last-updated { font-size: 0.75rem; color: #9ca3af; }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav>
+  <div class="brand">AI Support <span>System</span><span class="admin-badge">ADMIN</span></div>
+  <div class="nav-right">
+    <span class="user-name">Hello, <span id="admin-name">Admin</span></span>
+    <button class="btn-logout" onclick="logout()">Sign Out</button>
+  </div>
+</nav>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('tickets')">🎫 Tickets <span class="tab-count" id="tab-count-tickets">0</span></button>
+  <button class="tab-btn" onclick="switchTab('feedback')">⭐ Feedback</button>
+  <button class="tab-btn" onclick="switchTab('logs')">📋 Logs</button>
+  <button class="tab-btn" onclick="switchTab('monitoring')">📊 Monitoring</button>
+</div>
+
+<main>
+  <div>
+    <h1>Admin Dashboard</h1>
+    <p class="section-subtitle">Monitor tickets that need attention, review feedback, and audit system activity</p>
+  </div>
+
+  <!-- ══════════════ TICKETS TAB ══════════════ -->
+  <div id="tab-tickets" class="tab-panel active">
+
+    <!-- KPI cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card accent-total"><div class="kpi-label">Total Tickets</div><div class="kpi-value" id="kpi-total">—</div><div class="kpi-sub">All time, all statuses</div></div>
+      <div class="kpi-card accent-attention"><div class="kpi-label">Needs Attention</div><div class="kpi-value" id="kpi-attention">—</div><div class="kpi-sub">In Progress + Reopened + Failed</div></div>
+      <div class="kpi-card accent-reopened"><div class="kpi-label">Reopened</div><div class="kpi-value" id="kpi-reopened">—</div><div class="kpi-sub">Sent back by clients</div></div>
+      <div class="kpi-card accent-failed"><div class="kpi-label">Failed</div><div class="kpi-value" id="kpi-failed">—</div><div class="kpi-sub">AI could not resolve</div></div>
+      <div class="kpi-card accent-high"><div class="kpi-label">High Priority</div><div class="kpi-value" id="kpi-high">—</div><div class="kpi-sub">Among all tickets</div></div>
+      <div class="kpi-card accent-clients"><div class="kpi-label">Total Clients</div><div class="kpi-value" id="kpi-users">—</div><div class="kpi-sub">Registered client accounts</div></div>
+    </div>
+
+    <!-- Tickets table -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <h2>All Tickets</h2>
+          <div class="card-note">Every ticket in the system. Use the status filter to narrow down to a specific state.</div>
+        </div>
+        <div class="filters">
+          <input type="search" id="search-input" placeholder="Search tickets..." oninput="filterTickets()"/>
+          <select id="filter-queue" onchange="filterTickets()">
+            <option value="">All Queues</option>
+            <option>Technical Support</option><option>Billing and Payments</option>
+            <option>Customer Service</option><option>IT Support</option>
+            <option>Product Support</option><option>Returns and Exchanges</option>
+            <option>Service Outages and Maintenance</option><option>Sales and Pre-Sales</option>
+            <option>Human Resources</option><option>General Inquiry</option>
+          </select>
+          <select id="filter-priority" onchange="filterTickets()">
+            <option value="">All Priorities</option>
+            <option>high</option><option>medium</option><option>low</option>
+          </select>
+          <select id="filter-status" onchange="filterTickets()">
+            <option value="">All Statuses</option>
+            <option>In Progress</option><option>Reopened</option>
+            <option>Failed</option><option>Resolved</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Client</th><th>#</th><th>Subject</th><th>Type</th><th>Queue</th><th>Priority</th><th>Status</th><th>Date</th></tr>
+          </thead>
+          <tbody id="tickets-tbody">
+            <tr><td colspan="8" class="loading">Loading tickets...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ FEEDBACK TAB ══════════════ -->
+  <div id="tab-feedback" class="tab-panel">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <h2>User Feedback</h2>
+          <div class="card-note">All client feedback across every ticket.</div>
+        </div>
+        <select id="filter-rating" onchange="filterFeedback()">
+          <option value="">All Ratings</option>
+          <option value="5">⭐⭐⭐⭐⭐ 5 stars</option>
+          <option value="4">⭐⭐⭐⭐ 4 stars</option>
+          <option value="3">⭐⭐⭐ 3 stars</option>
+          <option value="2">⭐⭐ 2 stars</option>
+          <option value="1">⭐ 1 star</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Client</th><th>Email</th><th>Ticket #</th><th>Rating</th><th>Comment</th><th>Date</th></tr>
+          </thead>
+          <tbody id="feedback-tbody">
+            <tr><td colspan="6" class="loading">Loading feedback...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ LOGS TAB ══════════════ -->
+  <div id="tab-logs" class="tab-panel">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <h2>System Logs</h2>
+          <div class="card-note">Full activity trail: predictions, generated responses, admin replies, and status changes.</div>
+        </div>
+        <select id="filter-action" onchange="filterLogs()">
+          <option value="">All Actions</option>
+          <option value="Ticket created">Ticket created</option>
+          <option value="Prediction completed">Prediction completed</option>
+          <option value="AI response generated">AI response generated</option>
+          <option value="Ticket automatically resolved">Ticket automatically resolved</option>
+          <option value="Ticket failed">Ticket failed</option>
+          <option value="Customer reopened ticket">Customer reopened ticket</option>
+          <option value="Admin replied">Admin replied</option>
+          <option value="Admin resolved ticket">Admin resolved ticket</option>
+          <option value="status_changed">status_changed</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Client</th><th>Email</th><th>#</th><th>Ticket #</th><th>Action</th><th>Details</th><th>Date</th></tr>
+          </thead>
+          <tbody id="logs-tbody">
+            <tr><td colspan="7" class="loading">Loading logs...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ MONITORING TAB ══════════════ -->
+  <div id="tab-monitoring" class="tab-panel">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+      <div class="card-note">Live KPIs and performance metrics for the deployed AI support system</div>
+      <div class="refresh-row">
+        <span class="last-updated" id="mon-last-updated">—</span>
+        <button class="btn-refresh" onclick="loadMonitoring()">↻ Refresh</button>
+      </div>
+    </div>
+
+    <!-- KPI cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card accent-mon-users"><div class="kpi-label">Total Users</div><div class="kpi-value" id="mon-kpi-users">—</div><div class="kpi-sub">Registered clients</div></div>
+      <div class="kpi-card accent-mon-total"><div class="kpi-label">Total Tickets</div><div class="kpi-value" id="mon-kpi-total">—</div><div class="kpi-sub">All time, all statuses</div></div>
+      <div class="kpi-card accent-mon-resolved"><div class="kpi-label">Resolved</div><div class="kpi-value" id="mon-kpi-resolved">—</div><div class="kpi-sub" id="mon-kpi-resolved-pct">—</div></div>
+      <div class="kpi-card accent-mon-reopened"><div class="kpi-label">Reopened</div><div class="kpi-value" id="mon-kpi-reopened">—</div><div class="kpi-sub" id="mon-kpi-reopened-pct">—</div></div>
+      <div class="kpi-card accent-mon-failed"><div class="kpi-label">Failed</div><div class="kpi-value" id="mon-kpi-failed">—</div><div class="kpi-sub" id="mon-kpi-failed-pct">—</div></div>
+      <div class="kpi-card accent-mon-response"><div class="kpi-label">Avg Response Time</div><div class="kpi-value" id="mon-kpi-response">—</div><div class="kpi-sub">Milliseconds, AI generation</div></div>
+      <div class="kpi-card accent-mon-confidence"><div class="kpi-label">Avg Confidence Score</div><div class="kpi-value" id="mon-kpi-confidence">—</div><div class="kpi-sub">0.00 – 1.00 scale</div></div>
+      <div class="kpi-card accent-mon-rating"><div class="kpi-label">Avg Feedback Rating</div><div class="kpi-value" id="mon-kpi-rating">—</div><div class="kpi-sub">Out of 5 stars</div></div>
+    </div>
+
+    <!-- Retraining Alerts -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <h2>Retraining Monitor</h2>
+          <div class="card-note">Automatic checks on feedback, confidence, reopens, failures, volume &amp; new categories</div>
+        </div>
+        <button class="btn-refresh" onclick="loadRetrainingStatus()">↻ Run Check</button>
+      </div>
+      <div id="retrain-status-banner" class="retrain-status-banner status-ok" style="margin-bottom:1rem;">
+        <span class="retrain-status-dot"></span>
+        <span id="retrain-status-text">Checking...</span>
+      </div>
+      <div class="alert-list" id="retrain-alert-list">
+        <div class="loading">Loading...</div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-row">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2>Tickets by Priority</h2>
+            <div class="card-note">Distribution of AI-predicted priority labels</div>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="priorityChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2>Tickets by Queue</h2>
+            <div class="card-note">Distribution across support queues/departments</div>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="queueChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Recent activity -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <h2>Recent Activity</h2>
+          <div class="card-note">Latest system and admin actions logged</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Time</th><th>Admin</th><th>Ticket</th><th>Action</th></tr>
+          </thead>
+          <tbody id="mon-activity-tbody">
+            <tr><td colspan="4" class="loading">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Ticket detail modal -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <h3 id="modal-title">Ticket Details</h3>
+    <div class="modal-ticket-id" id="modal-ticket-id">Ticket #—</div>
+
+    <div class="modal-section">
+      <div class="modal-label">Client Information</div>
+      <div class="modal-client-box">
+        <div>
+          <div class="name" id="modal-client-name">—</div>
+          <div class="email" id="modal-client-email">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-label">Description</div>
+      <div class="modal-value" id="modal-desc">—</div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-label">AI Classification &amp; Prediction</div>
+      <div id="modal-labels" style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:0.3rem;"></div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-label">AI Generated Response</div>
+      <div class="modal-value" id="modal-response"
+           style="background:#f9fafb;padding:0.75rem;border-radius:0.5rem;border-left:3px solid #1f2937;line-height:1.6;">—</div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-label">Admin Reply</div>
+      <textarea id="modal-admin-reply" class="admin-reply-textarea" rows="4"
+                placeholder="Write a manual reply to the customer..."></textarea>
+      <div class="admin-reply-actions">
+        <button class="btn-save-reply" id="modal-save-reply-btn" onclick="saveAdminReply()">Save &amp; Resolve</button>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-label">Update Status</div>
+      <div class="modal-status-row">
+        <select class="status-select" id="modal-status-select" onchange="updateStatusFromModal()">
+          <option value="In Progress">In Progress</option>
+          <option value="Reopened">Reopened</option>
+          <option value="Failed">Failed</option>
+          <option value="Resolved">Resolved</option>
+        </select>
+        <span class="modal-save-note" id="modal-save-note">✓ Status updated</span>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <span style="font-size:0.75rem;color:#9ca3af;">Changing status or saving a reply will refresh the ticket list.</span>
+      <button class="modal-close" onclick="document.getElementById('modal-overlay').classList.remove('open')">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API   = "http://localhost:8000";
+  const token = localStorage.getItem("token");
+  const role  = localStorage.getItem("role");
+  const name  = localStorage.getItem("name");
+
+  if (!token) { window.location.href = "main.html"; }
+  if (role !== "admin") { window.location.href = "client_dashboard.html"; }
+
+  document.getElementById("admin-name").textContent = name || "Admin";
+
+  function logout() { localStorage.clear(); window.location.href = "main.html"; }
+
+  function authHeaders() {
+    return { "Content-Type": "application/json", "Authorization": `Bearer ${token}` };
+  }
+
+  // Statuses that count toward the "Needs Attention" KPI (table itself now shows everything).
+  const ATTENTION_STATUSES = ["In Progress", "Reopened", "Failed"];
+
+  // ── Tab switching ──
+  function switchTab(tabName) {
+    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.getElementById("tab-" + tabName).classList.add("active");
+    event.currentTarget.classList.add("active");
+
+    if (tabName === "feedback")   loadFeedback();
+    if (tabName === "logs")       loadLogs();
+    if (tabName === "monitoring") loadMonitoring();
+  }
+
+  // ════════════════════════════════
+  // TICKETS
+  // ════════════════════════════════
+  let allTickets = [];      // full set returned by the API — this IS what the table shows
+  let totalUsers = 0;
+
+  async function loadDashboard() {
+    const tbody = document.getElementById("tickets-tbody");
+    tbody.innerHTML = '<tr><td colspan="8" class="loading">Loading tickets...</td></tr>';
+    try {
+      const res  = await fetch(`${API}/admin/tickets`, { headers: authHeaders() });
+      const data = await res.json();
+      if (!res.ok) { renderTicketsError(); return; }
+      allTickets  = data.tickets || [];
+      totalUsers  = data.total_users || 0;
+      updateKPIs();
+      filterTickets();
+    } catch {
+      renderTicketsError();
+    }
+  }
+
+  function updateKPIs() {
+    const attention = allTickets.filter(t => ATTENTION_STATUSES.includes(t.status));
+    document.getElementById("kpi-total").textContent     = allTickets.length;
+    document.getElementById("kpi-attention").textContent = attention.length;
+    document.getElementById("kpi-reopened").textContent  = allTickets.filter(t => t.status === "Reopened").length;
+    document.getElementById("kpi-failed").textContent    = allTickets.filter(t => t.status === "Failed").length;
+    document.getElementById("kpi-high").textContent      = allTickets.filter(t => (t.predicted_priority||"").toLowerCase() === "high").length;
+    document.getElementById("kpi-users").textContent     = totalUsers;
+    document.getElementById("tab-count-tickets").textContent = allTickets.length;
+  }
+
+  function statusClass(status) {
+    return "status-" + (status || "inprogress").toLowerCase().replace(/\s+/g, "");
+  }
+
+  function renderTable(tickets) {
+    const tbody = document.getElementById("tickets-tbody");
+    if (!tickets.length) { renderTicketsEmpty(); return; }
+    tbody.innerHTML = tickets.map((t) => {
+      const idx = allTickets.indexOf(t);
+      return `
+      <tr>
+        <td class="client-cell">
+          <div class="client-name">${t.user_name || "—"}</div>
+          <div class="client-email">${t.user_email || "—"}</div>
+        </td>
+        <td style="color:#9ca3af;">${t.id}</td>
+        <td><span class="desc-cell" onclick="openModal(${idx})" title="Click to view details">
+          ${t.subject || (t.description||"").substring(0,40) + "..." || "—"}
+        </span></td>
+        <td><span class="badge badge-type">${t.predicted_type||"—"}</span></td>
+        <td><span class="badge badge-queue" style="font-size:0.68rem">${t.predicted_queue||"—"}</span></td>
+        <td><span class="badge badge-${(t.predicted_priority||'low').toLowerCase()}">${t.predicted_priority||"—"}</span></td>
+        <td>
+          <select class="status-select ${statusClass(t.status)}" onchange="updateStatus(${t.id}, this.value)">
+            <option value="In Progress" ${t.status==='In Progress'?'selected':''}>In Progress</option>
+            <option value="Reopened" ${t.status==='Reopened'?'selected':''}>Reopened</option>
+            <option value="Failed" ${t.status==='Failed'?'selected':''}>Failed</option>
+            <option value="Resolved" ${t.status==='Resolved'?'selected':''}>Resolved</option>
+          </select>
+        </td>
+        <td style="color:#9ca3af;">${formatDate(t.created_at)}</td>
+      </tr>
+    `;
+    }).join("");
+  }
+
+  function renderTicketsEmpty() {
+    document.getElementById("tickets-tbody").innerHTML =
+      '<tr><td colspan="8" class="empty-state">No tickets match the current filters.</td></tr>';
+  }
+
+  function renderTicketsError() {
+    document.getElementById("tickets-tbody").innerHTML =
+      '<tr><td colspan="8" class="error-state">Could not load tickets. Please try again.</td></tr>';
+  }
+
+  function filterTickets() {
+    const search   = document.getElementById("search-input").value.toLowerCase();
+    const queue    = document.getElementById("filter-queue").value;
+    const priority = document.getElementById("filter-priority").value;
+    const status   = document.getElementById("filter-status").value;
+    const filtered = allTickets.filter(t => {
+      return (!search   || (t.subject||"").toLowerCase().includes(search) || (t.description||"").toLowerCase().includes(search))
+          && (!queue    || t.predicted_queue === queue)
+          && (!priority || (t.predicted_priority||"").toLowerCase() === priority.toLowerCase())
+          && (!status   || t.status === status);
+    });
+    renderTable(filtered);
+  }
+
+  async function updateStatus(ticketId, newStatus) {
+    try {
+      await fetch(`${API}/admin/tickets/${ticketId}/status`, {
+        method: "PATCH",
+        headers: authHeaders(),
+        body: JSON.stringify({ status: newStatus })
+      });
+    } catch {
+      console.error("Failed to update status");
+    } finally {
+      // Always refresh the ticket list from the server after a status change
+      await loadDashboard();
+    }
+  }
+
+  let modalTicketIndex = null;
+
+  function openModal(index) {
+    const t = allTickets[index];
+    if (!t) return;
+    modalTicketIndex = index;
+    document.getElementById("modal-title").textContent = t.subject || "Ticket #" + t.id;
+    document.getElementById("modal-ticket-id").textContent = "Ticket #" + t.id;
+    document.getElementById("modal-client-name").textContent = t.user_name || "Unknown client";
+    document.getElementById("modal-client-email").textContent = t.user_email || "—";
+    document.getElementById("modal-desc").textContent  = t.description || "—";
+    document.getElementById("modal-response").textContent = t.response || "No response generated.";
+    document.getElementById("modal-labels").innerHTML = `
+      <span class="badge badge-type">Type: ${t.predicted_type||"—"}</span>
+      <span class="badge badge-queue">Queue: ${t.predicted_queue||"—"}</span>
+      <span class="badge badge-${(t.predicted_priority||'low').toLowerCase()}">Priority: ${t.predicted_priority||"—"}</span>
+    `;
+    document.getElementById("modal-admin-reply").value = t.admin_response || "";
+    document.getElementById("modal-status-select").value = t.status || "In Progress";
+    document.getElementById("modal-save-note").classList.remove("show");
+    document.getElementById("modal-overlay").classList.add("open");
+  }
+
+  async function updateStatusFromModal() {
+    if (modalTicketIndex === null) return;
+    const t = allTickets[modalTicketIndex];
+    const newStatus = document.getElementById("modal-status-select").value;
+    if (!t) return;
+    try {
+      await fetch(`${API}/admin/tickets/${t.id}/status`, {
+        method: "PATCH",
+        headers: authHeaders(),
+        body: JSON.stringify({ status: newStatus })
+      });
+      const note = document.getElementById("modal-save-note");
+      note.textContent = "✓ Status updated";
+      note.classList.add("show");
+      setTimeout(() => note.classList.remove("show"), 2000);
+    } catch {
+      console.error("Failed to update status");
+    } finally {
+      await loadDashboard();
+    }
+  }
+
+  async function saveAdminReply() {
+    if (modalTicketIndex === null) return;
+    const t = allTickets[modalTicketIndex];
+    if (!t) return;
+
+    const replyText = document.getElementById("modal-admin-reply").value.trim();
+    if (!replyText) {
+      alert("Please write a reply before saving.");
+      return;
+    }
+
+    const btn = document.getElementById("modal-save-reply-btn");
+    btn.disabled = true;
+    try {
+      const res = await fetch(`${API}/admin/tickets/${t.id}/reply`, {
+        method: "PATCH",
+        headers: authHeaders(),
+        body: JSON.stringify({ response: replyText })
+      });
+      if (!res.ok) throw new Error();
+
+      const note = document.getElementById("modal-save-note");
+      note.textContent = "✓ Reply saved & ticket resolved";
+      note.classList.add("show");
+      setTimeout(() => note.classList.remove("show"), 2500);
+    } catch {
+      alert("Could not save the reply. Please try again.");
+    } finally {
+      btn.disabled = false;
+      await loadDashboard();
+    }
+  }
+
+  function closeModal(e) {
+    if (e.target === document.getElementById("modal-overlay"))
+      document.getElementById("modal-overlay").classList.remove("open");
+  }
+
+  // ════════════════════════════════
+  // FEEDBACK
+  // ════════════════════════════════
+  let allFeedback = [];
+
+  async function loadFeedback() {
+    const tbody = document.getElementById("feedback-tbody");
+    tbody.innerHTML = '<tr><td colspan="6" class="loading">Loading...</td></tr>';
+    try {
+      const res  = await fetch(`${API}/admin/feedback`, { headers: authHeaders() });
+      const data = await res.json();
+      if (!res.ok || !data.feedback) { renderFeedbackEmpty(); return; }
+      allFeedback = data.feedback;
+      renderFeedback(allFeedback);
+    } catch { renderFeedbackEmpty(); }
+  }
+
+  function renderFeedback(items) {
+    const tbody = document.getElementById("feedback-tbody");
+    if (!items.length) { renderFeedbackEmpty(); return; }
+    tbody.innerHTML = items.map(f => `
+      <tr>
+        <td>${f.user_name || "—"}</td>
+        <td>${f.user_email || "—"}</td>
+        <td>#${f.ticket_id||"—"}</td>
+        <td>${renderStars(f.rating)}</td>
+        <td style="max-width:300px;color:#6b7280;">${f.comment || "—"}</td>
+        <td style="color:#9ca3af;">${formatDate(f.created_at)}</td>
+      </tr>
+    `).join("");
+  }
+
+  function renderFeedbackEmpty() {
+    document.getElementById("feedback-tbody").innerHTML =
+      '<tr><td colspan="6" class="empty-state">No feedback yet.</td></tr>';
+  }
+
+  function filterFeedback() {
+    const rating = document.getElementById("filter-rating").value;
+    const filtered = rating ? allFeedback.filter(f => String(f.rating) === rating) : allFeedback;
+    renderFeedback(filtered);
+  }
+
+  function renderStars(rating) {
+    const r = parseInt(rating) || 0;
+    let html = '<span class="stars">';
+    for (let i = 1; i <= 5; i++)
+      html += i <= r ? "★" : '<span>★</span>';
+    return html + "</span>";
+  }
+
+  // ════════════════════════════════
+  // LOGS
+  // ════════════════════════════════
+  let allLogs = [];
+
+  async function loadLogs() {
+    const tbody = document.getElementById("logs-tbody");
+    tbody.innerHTML = '<tr><td colspan="7" class="loading">Loading...</td></tr>';
+    try {
+      const res  = await fetch(`${API}/admin/logs`, { headers: authHeaders() });
+      const data = await res.json();
+      if (!res.ok || !data.logs) { renderLogsEmpty(); return; }
+      allLogs = data.logs;
+      renderLogs(allLogs);
+    } catch { renderLogsEmpty(); }
+  }
+
+  function renderLogs(items) {
+    const tbody = document.getElementById("logs-tbody");
+    if (!items.length) { renderLogsEmpty(); return; }
+    tbody.innerHTML = items.map(l => `
+      <tr>
+        <td>${l.user_name || "—"}</td>
+        <td>${l.user_email || "—"}</td>
+        <td style="color:#9ca3af;">${l.id}</td>
+        <td>#${l.ticket_id||"—"}</td>
+        <td><span class="log-action">${l.action||"—"}</span></td>
+        <td style="max-width:280px;color:#6b7280;font-size:0.78rem;">
+          ${l.metadata ? JSON.stringify(l.metadata) : "—"}
+        </td>
+        <td style="color:#9ca3af;">${formatDate(l.created_at)}</td>
+      </tr>
+    `).join("");
+  }
+
+  function renderLogsEmpty() {
+    document.getElementById("logs-tbody").innerHTML =
+      '<tr><td colspan="7" class="empty-state">No logs yet.</td></tr>';
+  }
+
+  function filterLogs() {
+    const action = document.getElementById("filter-action").value;
+    const filtered = action ? allLogs.filter(l => l.action === action) : allLogs;
+    renderLogs(filtered);
+  }
+
+  // ── Helpers ──
+  function formatDate(dt) {
+    if (!dt) return "—";
+    return new Date(dt).toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" });
+  }
+
+  function formatDateTime(dt) {
+    if (!dt) return "—";
+    return new Date(dt).toLocaleString("en-GB", {
+      day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
+    });
+  }
+
+  // ════════════════════════════════
+  // MONITORING
+  // ════════════════════════════════
+  const PRIORITY_COLORS = { High: "#ef4444", Medium: "#f59e0b", Low: "#22c55e", Unknown: "#9ca3af" };
+  const QUEUE_PALETTE = ["#6366f1", "#0891b2", "#a855f7", "#f59e0b", "#16a34a", "#ec4899", "#64748b", "#dc2626"];
+  let priorityChart = null;
+  let queueChart = null;
+
+  async function loadMonitoring() {
+    document.getElementById("mon-activity-tbody").innerHTML =
+      '<tr><td colspan="4" class="loading">Loading...</td></tr>';
+    try {
+      const res = await fetch(`${API}/admin/monitoring`, { headers: authHeaders() });
+      const data = await res.json();
+      if (!res.ok) throw new Error("Request failed");
+
+      renderMonitoringKPIs(data);
+
+      try {
+        renderPriorityChart(data.priority_distribution || {});
+        renderQueueChart(data.queue_distribution || {});
+      } catch (chartErr) {
+        console.error("Chart rendering failed (Chart.js may not have loaded):", chartErr);
+      }
+
+      renderMonitoringActivity(data.recent_activity || []);
+      document.getElementById("mon-last-updated").textContent =
+        "Last updated: " + new Date().toLocaleTimeString();
+    } catch {
+      document.getElementById("mon-activity-tbody").innerHTML =
+        '<tr><td colspan="4" class="error-state">Could not load monitoring data. Please try again.</td></tr>';
+    }
+
+    loadRetrainingStatus();
+  }
+
+  // ════════════════════════════════
+  // RETRAINING ALERTS
+  // ════════════════════════════════
+  const STATUS_LABELS = {
+    ok: "All systems normal — no retraining signals detected.",
+    warning: "Some metrics need attention — see details below.",
+    retrain_recommended: "Retraining recommended — critical thresholds breached.",
+  };
+
+  async function loadRetrainingStatus() {
+    const banner = document.getElementById("retrain-status-banner");
+    const list = document.getElementById("retrain-alert-list");
+    list.innerHTML = '<div class="loading">Loading...</div>';
+
+    try {
+      const res = await fetch(`${API}/admin/monitoring/retraining`, { headers: authHeaders() });
+      const data = await res.json();
+      if (!res.ok) throw new Error("Request failed");
+
+      banner.className = `retrain-status-banner status-${data.status}`;
+      document.getElementById("retrain-status-text").textContent =
+        STATUS_LABELS[data.status] || data.status;
+
+      renderRetrainingAlerts(data.active_alerts || []);
+    } catch {
+      list.innerHTML = '<div class="error-state">Could not load retraining status. Please try again.</div>';
+    }
+  }
+
+  function renderRetrainingAlerts(alerts) {
+    const list = document.getElementById("retrain-alert-list");
+    if (!alerts.length) {
+      list.innerHTML = '<div class="empty-state">No active alerts.</div>';
+      return;
+    }
+    list.innerHTML = alerts.map(a => `
+      <div class="alert-item severity-${a.severity}">
+        <div class="alert-text">
+          <div class="alert-label">${a.condition_key.replace(/_/g, " ")}</div>
+          ${a.message}
+        </div>
+        <button class="btn-resolve" onclick="resolveRetrainingAlert(${a.id})">Dismiss</button>
+      </div>
+    `).join("");
+  }
+
+  async function resolveRetrainingAlert(alertId) {
+    try {
+      await fetch(`${API}/admin/monitoring/retraining/alerts/${alertId}/resolve`, {
+        method: "POST",
+        headers: authHeaders(),
+      });
+      loadRetrainingStatus();
+    } catch {
+      alert("Could not resolve alert. Please try again.");
+    }
+  }
+
+  function monPct(part, total) {
+    if (!total) return "0%";
+    return Math.round((part / total) * 100) + "% of total";
+  }
+
+  function renderMonitoringKPIs(data) {
+    const total = data.total_tickets || 0;
+    document.getElementById("mon-kpi-users").textContent      = data.total_users ?? "—";
+    document.getElementById("mon-kpi-total").textContent      = total;
+    document.getElementById("mon-kpi-resolved").textContent   = data.resolved_tickets ?? 0;
+    document.getElementById("mon-kpi-resolved-pct").textContent = monPct(data.resolved_tickets, total);
+    document.getElementById("mon-kpi-reopened").textContent   = data.reopened_tickets ?? 0;
+    document.getElementById("mon-kpi-reopened-pct").textContent = monPct(data.reopened_tickets, total);
+    document.getElementById("mon-kpi-failed").textContent     = data.failed_tickets ?? 0;
+    document.getElementById("mon-kpi-failed-pct").textContent = monPct(data.failed_tickets, total);
+    document.getElementById("mon-kpi-response").textContent   =
+      data.average_response_time_ms != null ? Math.round(data.average_response_time_ms) + " ms" : "—";
+    document.getElementById("mon-kpi-confidence").textContent =
+      data.average_confidence_score != null ? data.average_confidence_score.toFixed(2) : "—";
+    document.getElementById("mon-kpi-rating").textContent     =
+      data.average_feedback_rating != null ? data.average_feedback_rating.toFixed(2) + " / 5" : "—";
+  }
+
+  function renderPriorityChart(dist) {
+    const labels = Object.keys(dist);
+    const values = Object.values(dist);
+    const colors = labels.map(l => PRIORITY_COLORS[l] || "#9ca3af");
+    if (priorityChart) priorityChart.destroy();
+    if (!labels.length) return;
+    priorityChart = new Chart(document.getElementById("priorityChart"), {
+      type: "doughnut",
+      data: { labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "bottom" } } }
+    });
+  }
+
+  function renderQueueChart(dist) {
+    const labels = Object.keys(dist);
+    const values = Object.values(dist);
+    const colors = labels.map((_, i) => QUEUE_PALETTE[i % QUEUE_PALETTE.length]);
+    if (queueChart) queueChart.destroy();
+    if (!labels.length) return;
+    queueChart = new Chart(document.getElementById("queueChart"), {
+      type: "bar",
+      data: { labels, datasets: [{ label: "Tickets", data: values, backgroundColor: colors, borderRadius: 6 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+      }
+    });
+  }
+
+  function renderMonitoringActivity(items) {
+    const tbody = document.getElementById("mon-activity-tbody");
+    if (!items.length) {
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No activity logged yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = items.map(l => `
+      <tr>
+        <td style="color:#9ca3af;">${formatDateTime(l.created_at)}</td>
+        <td>${l.admin_name || "System"}</td>
+        <td>#${l.ticket_id ?? "—"}</td>
+        <td><span class="log-action">${l.action || "—"}</span></td>
+      </tr>
+    `).join("");
+  }
+
+  loadDashboard();
+</script>
+
+</body>
+</html>

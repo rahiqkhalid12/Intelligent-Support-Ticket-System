@@ -1,0 +1,25 @@
+{
+  "type": {
+    "Change": 0,
+    "Incident": 1,
+    "Problem": 2,
+    "Request": 3
+  },
+  "queue": {
+    "Billing and Payments": 0,
+    "Customer Service": 1,
+    "General Inquiry": 2,
+    "Human Resources": 3,
+    "IT Support": 4,
+    "Product Support": 5,
+    "Returns and Exchanges": 6,
+    "Sales and Pre-Sales": 7,
+    "Service Outages and Maintenance": 8,
+    "Technical Support": 9
+  },
+  "priority": {
+    "high": 0,
+    "low": 1,
+    "medium": 2
+  }
+}

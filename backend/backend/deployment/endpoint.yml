@@ -1,0 +1,11 @@
+$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineEndpoint.schema.json
+
+name: support-ticket-endpoint
+
+auth_mode: key
+
+description: Support Ticket Classification API
+
+tags:
+  project: support-ticket
+  team: ai

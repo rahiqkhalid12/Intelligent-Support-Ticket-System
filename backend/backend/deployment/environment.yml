@@ -1,0 +1,17 @@
+name: support-ticket-env
+
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.10
+
+  - pip
+
+  - pip:
+      - azureml-defaults
+      - scikit-learn
+      - pandas
+      - numpy
+      - scipy
+      - joblib

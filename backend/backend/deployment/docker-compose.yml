@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+
+  support-ticket-api:
+
+    build: .
+
+    container_name: support-ticket-api
+
+    ports:
+      - "8000:8000"
+
+    restart: always

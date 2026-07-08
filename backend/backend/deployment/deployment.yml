@@ -1,0 +1,23 @@
+$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineDeployment.schema.json
+
+name: blue
+
+endpoint_name: support-ticket-endpoint
+
+model: azureml:support-ticket-model:1
+
+environment: azureml:support-ticket-env:1
+
+code_configuration:
+  code: .
+  scoring_script: score.py
+
+instance_type: Standard_DS3_v2
+
+instance_count: 1
+
+request_settings:
+  request_timeout_ms: 60000
+
+environment_variables:
+  AZUREML_LOG_LEVEL: INFO

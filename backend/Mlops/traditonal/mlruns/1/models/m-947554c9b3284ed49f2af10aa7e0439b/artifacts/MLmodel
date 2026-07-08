@@ -1,0 +1,23 @@
+artifact_path: file:///D:/courses/microsoft ML engineer/support_ticket/mlruns/1/models/m-947554c9b3284ed49f2af10aa7e0439b/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.skops
+    predict_fn: predict
+    python_version: 3.12.1
+  sklearn:
+    code: null
+    pickled_model: model.skops
+    serialization_format: skops
+    sklearn_version: 1.9.0
+    skops_trusted_types: null
+mlflow_version: 3.14.0
+model_id: m-947554c9b3284ed49f2af10aa7e0439b
+model_size_bytes: 968120
+model_uuid: m-947554c9b3284ed49f2af10aa7e0439b
+prompts: null
+run_id: 27c2f3d2869f4c77b809e04b55155726
+utc_time_created: '2026-07-05 03:00:25.859632'
