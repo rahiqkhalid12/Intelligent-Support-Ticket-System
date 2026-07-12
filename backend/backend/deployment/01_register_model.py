@@ -7,11 +7,11 @@ from pathlib import Path
 # Azure Information
 # =====================================================
 
-SUBSCRIPTION_ID = "8192d9f0-6361-4953-a574-f9d51f0e407d"
+SUBSCRIPTION_ID = "YOUR SUBSCRIPTION_ID"
 
-RESOURCE_GROUP = "support-ticket-rg"
+RESOURCE_GROUP = "YOUR RESOURCE_GROUP"
 
-WORKSPACE_NAME = "support-ticket-ml"
+WORKSPACE_NAME = "YOUR WORKSPACE_NAME"
 
 MODEL_NAME = "support-ticket-model"
 

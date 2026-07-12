@@ -58,13 +58,11 @@ def get_db():
 # ================================================================
 # Config
 # ================================================================
-SECRET_KEY = "your-secret-key-change-this-in-production"
+SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM  = "HS256"
 TOKEN_EXPIRE_HOURS = 24
 
-AZURE_PREDICT_URL = (
-    "https://support-ticket-api.greenglacier-c56a6308.swedencentral.azurecontainerapps.io/predict"
-)
+AZURE_PREDICT_URL = os.getenv("AZURE_PREDICT_URL")
 
 app = FastAPI(title="AI Support System API")
 

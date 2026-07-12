@@ -6,9 +6,9 @@ from azure.ai.ml.entities import Environment
 # Azure Configuration
 # =====================================================
 
-SUBSCRIPTION_ID = "8192d9f0-6361-4953-a574-f9d51f0e407d"
-RESOURCE_GROUP = "support-ticket-rg"
-WORKSPACE_NAME = "support-ticket-ml"
+SUBSCRIPTION_ID = "YOUR SUBSCRIPTION_ID"
+RESOURCE_GROUP = "YOUR RESOURCE_GROUP"
+WORKSPACE_NAME = "YOUR WORKSPACE_NAME"
 
 ENVIRONMENT_NAME = "support-ticket-env"
 
