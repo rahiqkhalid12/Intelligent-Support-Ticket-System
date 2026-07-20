@@ -106,14 +106,6 @@ Intelligent-Support-Ticket-System/
 │   ├── backend_connector/
 │   └── Mlops/
 │
-├── data/
-│   ├── raw/
-│   └── processed/
-│
-├── models/
-│   ├── traditional/
-│   ├── rag/
-│   └── train_config.json
 │
 ├── rag/
 │   ├── build_vector_store.py
@@ -281,14 +273,14 @@ Launch the frontend and access the application through your browser.
 
 ## Contributors
 
-- **Rahiq Khaled** – Dataset collection, data cleaning, exploratory data analysis (EDA) on raw and processed data, MLflow experiment tracking and monitoring, and database design.
+- **Rahiq Khaled** – Dataset collection, data cleaning, exploratory data analysis (EDA) on raw and processed data, MLflow experiment tracking and monitoring, and JWT-based authentication and authorization, SQLite database, login/signup page.
 - **Tasneem Khaled** – Data preprocessing, TF-IDF and Sentence-BERT embeddings,Backend & Integration using FastAPI.
 - **Aya Elsayed** – Azure Machine Learning model deployment, KPI dashboard implementation, retraining trigger development.
 - **Radwa Khaled** – Model development (TF-IDF, DistilBERT, and RAG), model evaluation using Accuracy, F1-score, and BLEU, confusion matrix analysis, and performance comparison between Traditional ML, DistilBERT, and RAG.
 - **Aya Abdelshafy** – Azure AI Search (Vector Database) integration, semantic retrieval pipeline.
 
 ### Frontend
-The frontend (login/signup pages, client dashboard, and administrator dashboard) was developed collaboratively by all team members.
+The frontend (client dashboard and administrator dashboard) was developed collaboratively by all team members.
 ---
 
 ## License
