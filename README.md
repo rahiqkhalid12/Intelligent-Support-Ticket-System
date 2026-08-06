@@ -21,6 +21,13 @@ An end-to-end AI-powered customer support system that automates support ticket c
 - Monitoring and automated retraining recommendations
 
 ---
+---
+
+## Dataset
+
+This project is based on the **Multilingual Customer Support Tickets** dataset from Kaggle. Since this project focuses on English-language support ticket classification and response generation, the English subset of the dataset was used after data cleaning and preprocessing.
+
+**Dataset:** https://www.kaggle.com/datasets/tobiasbueck/multilingual-customer-support-tickets
 
 ## System Architecture
 
@@ -138,8 +145,8 @@ Intelligent-Support-Ticket-System/
 ├── client_dashboard.html
 ├── main.html
 ├── requirements.txt
+├── Infographic_designer.jpg
 ├── support_ticket_report.pdf
-├── support_ticket_system.pptx
 ├── project_documentation.pdf
 └── README.md
 ```
@@ -276,7 +283,7 @@ Launch the frontend and access the application through your browser.
 - **Rahiq Khaled** – Dataset collection, data cleaning, exploratory data analysis (EDA) on raw and processed data, MLflow experiment tracking and monitoring, and JWT-based authentication and authorization, SQLite database, login/signup page.
 - **Tasneem Khaled** – Data preprocessing, TF-IDF and Sentence-BERT embeddings,Backend & Integration using FastAPI.
 - **Aya Elsayed** – Azure Machine Learning model deployment, KPI dashboard implementation, retraining trigger development.
-- **Radwa Khaled** – Model development (TF-IDF, DistilBERT, and RAG), model evaluation using Accuracy, F1-score, and BLEU, confusion matrix analysis, and performance comparison between Traditional ML, DistilBERT, and RAG.
+- **Radwa Ahmed** – Model development (TF-IDF, DistilBERT, and RAG), model evaluation using Accuracy, F1-score, and BLEU, confusion matrix analysis, and performance comparison between Traditional ML, DistilBERT, and RAG.
 - **Aya Abdelshafy** – Azure AI Search (Vector Database) integration, semantic retrieval pipeline.
 
 ### Frontend
